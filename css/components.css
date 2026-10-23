@@ -2,6 +2,39 @@
 .server-banner{width:100%;height:100%;object-fit:cover;object-position:center;display:block}.brand [data-server-icon]{display:inline-flex;align-items:center;vertical-align:middle}.server-icon{width:40px;height:40px;object-fit:cover;border-radius:50%;border:1px solid var(--gold)}.brand .brand-name{font-size:inherit;letter-spacing:inherit;margin:0}.avatar{object-fit:cover;flex-shrink:0}.staff-card,.podium article,.rank-row{min-width:0}.staff-card h3,.podium h3,.rank-row strong{overflow-wrap:anywhere}.rank-row strong{min-width:0}.rank-row>span:last-child{flex-shrink:0}.chart-top{gap:16px;flex-wrap:wrap}.hero h1{overflow-wrap:anywhere}.hero-description{max-width:620px;margin-inline:auto}.state{grid-column:1/-1}.rank-row .avatar{width:30px;height:30px}@media(max-width:480px){.rank-list{grid-template-columns:1fr}.brand .server-icon{width:32px;height:32px}.podium .avatar{width:44px;height:44px}.rank-mark{font-size:9px;letter-spacing:1px}}
 dialog img{max-width:100%;object-fit:contain}
 
+html{
+    -webkit-user-select:none;
+    user-select:none;
+}
+.hero-description{
+    width:fit-content;
+    max-width:min(620px,100%);
+    padding:16px 24px;
+    background:rgba(3,16,26,.72);
+    border:1px solid rgba(212,175,103,.18);
+    border-radius:12px;
+    box-shadow:0 8px 28px #020d1826;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+}
+@media(max-width:480px){
+    .hero-description{padding:12px 16px}
+}
+.closing{position:relative;isolation:isolate;overflow:hidden}
+.closing>.closing-oasis{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.closing h2{ text-shadow:0 2px 16px #020d18cc }
+.profile-banner{position:relative;height:160px;margin:-48px -35px 24px;overflow:hidden;background:var(--night)}
+#detail .profile-banner img{display:block;width:100%;height:100%;max-width:none;margin:0;object-fit:cover}
+.profile-banner:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#07182455,#071824bb)}
+#detail:has(.profile-banner) .dialog-close{z-index:1;background:#07182499;border-radius:50%;width:36px;height:36px;line-height:1}
+@media(min-width:801px){
+    .profile-banner{height:220px}
+    #detail.staff-detail{max-width:760px}
+}
+@media(hover:hover) and (pointer:fine){
+    .staff-card:hover{transform:none}
+}
+
 /* Keep the server title on one line, including longer API-provided names. */
 .hero-content{min-width:0;width:100%}
 .hero h1{white-space:nowrap;overflow-wrap:normal;overflow:hidden;text-overflow:ellipsis;max-width:100%}

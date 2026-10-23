@@ -83,7 +83,7 @@ export async function getRelics(){
   return list(data,'relics').map(relic=>({...relic,image:relic.image_url?new URL(relic.image_url,`${config.apiBaseUrl}/`).href:relic.image}));
 }
 async function apiRequest(endpoint, params = {}) {
-    const url = new URL(API_BASE);
+    const url = new URL(config.apiBaseUrl);
 
     url.searchParams.set("endpoint", endpoint);
 

@@ -35,6 +35,11 @@ html{
     .staff-card:hover{transform:none}
 }
 
+/* Keep top player names centered without changing the card layout. */
+.podium{grid-template-columns:repeat(3,minmax(0,1fr))}
+.podium h3{min-width:0;text-align:center;white-space:nowrap;overflow-wrap:normal;overflow:hidden;text-overflow:ellipsis}
+.podium .profile-name{display:block;width:100%;max-width:100%;text-align:center;white-space:nowrap;overflow-wrap:normal;overflow:hidden;text-overflow:ellipsis}
+
 /* Keep the server title on one line, including longer API-provided names. */
 .hero-content{min-width:0;width:100%}
 .hero h1{white-space:nowrap;overflow-wrap:normal;overflow:hidden;text-overflow:ellipsis;max-width:100%}

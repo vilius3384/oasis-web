@@ -2,6 +2,37 @@ import * as mock from './mock-data.js';
 // Public guild API. Never put bot tokens here.
 export const config={useMock:false,apiBaseUrl:'https://darkseagreen-armadillo-213676.hostingersite.com/oasis-api.php',discordInviteUrl:''};
 
+const RELIC_IMAGES = {
+    compass: "desert_compass.png",
+    amulet: "oasis_amulet.png",
+    key: "forgotten_key.png",
+    crystal: "oasis_crystal.png",
+    scroll: "ancient_scroll.png",
+    sand: "sand_clock.png",
+    urn: "pharaoh_urn.png",
+    crown: "lost_crown.png",
+    rose: "desert_rose.png",
+    heart: "oasis_heart.png"
+};
+
+export async function getRelics() {
+    const data = await request("/relics", () => mock.relics);
+
+    return list(data, "relics").map(relic => {
+        const filename = RELIC_IMAGES[relic.id];
+
+        return {
+            ...relic,
+            image: filename
+                ? new URL(
+                    `../assets/relics/${filename}`,
+                    import.meta.url
+                ).href
+                : null
+        };
+    });
+}
+
 async function request(path, fallback) {
     if (config.useMock) {
         return structuredClone(fallback());
@@ -77,7 +108,4 @@ export async function getServerActivity(){
     milestones:recent.slice().reverse().map(day=>({date:day.date,text:`${count(day.messages)} žinutės · ${count(day.active_members)} aktyvūs nariai`}))
   };
 }
-export async function getRelics(){
-  const data=await request('/relics',()=>mock.relics);
-  return list(data,'relics').map(relic=>({...relic,image:relic.image_url?new URL(relic.image_url,`${config.apiBaseUrl}/`).href:relic.image}));
-}
+

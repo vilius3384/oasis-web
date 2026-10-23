@@ -1,6 +1,33 @@
 import {config,getServerDetails,getServerStats,getStaffMembers,getTopChatters,getServerActivity,getRelics} from './api.js';
 import {renderPersonDetail,renderServerDetails,renderStats,renderStaff,renderLeaderboard,renderRelics,renderActivity,escapeHTML,safeImage} from './components.js';
 import {initializeAnimations,observeCounters,animateText} from './animations.js';
+import { OasisAPI } from "./api.js";
+
+async function loadOasisData() {
+    try {
+        const stats = await OasisAPI.getStats();
+
+        document.querySelector("#members").textContent =
+            stats.members.toLocaleString("lt-LT");
+
+        document.querySelector("#boosts").textContent =
+            stats.boosts.toLocaleString("lt-LT");
+
+        document.querySelector("#online").textContent =
+            stats.online.toLocaleString("lt-LT");
+
+        const joinButton = document.querySelector("#join-server");
+
+        if (stats.invite_url && joinButton) {
+            joinButton.href = stats.invite_url;
+        }
+
+    } catch (error) {
+        console.error("Failed to load OAZĖ data:", error);
+    }
+}
+
+loadOasisData();
 const dialog=document.querySelector('#detail');
 function openDetail(html,label="Oazės informacija"){dialog.setAttribute("aria-label",label);const content=document.querySelector('#detail-content');content.innerHTML=html;content.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{img.src='assets/icons/sun.svg';},{once:true}));dialog.showModal();}
 function bindProfiles(data,root,period){

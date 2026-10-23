@@ -1,12 +1,39 @@
 import * as mock from './mock-data.js';
 // Public guild API. Never put bot tokens here.
 export const config={useMock:false,apiBaseUrl:'https://darkseagreen-armadillo-213676.hostingersite.com/oasis-api.php',discordInviteUrl:''};
-async function request(path,fallback){
-  if(config.useMock)return structuredClone(fallback());
-  if(!/^https?:\/\//.test(config.apiBaseUrl))throw new Error('Nesukonfigūruotas API adresas.');
-  const response=await fetch(`${config.apiBaseUrl.replace(/\/$/,'')}${path}`,{signal:AbortSignal.timeout(12000),headers:{Accept:'application/json'}});
-  if(!response.ok)throw new Error('Nepavyko pasiekti oazės įrašų.');
-  return response.json();
+async function request(path, fallback) {
+    if (config.useMock) {
+        return structuredClone(fallback());
+    }
+
+    if (!/^https?:\/\//.test(config.apiBaseUrl)) {
+        throw new Error("Nesukonfigūruotas API adresas.");
+    }
+
+    const [endpoint, queryString = ""] = path.replace(/^\//, "").split("?");
+
+    const url = new URL(config.apiBaseUrl);
+
+    url.searchParams.set("endpoint", endpoint);
+
+    const params = new URLSearchParams(queryString);
+
+    for (const [key, value] of params) {
+        url.searchParams.set(key, value);
+    }
+
+    const response = await fetch(url, {
+        signal: AbortSignal.timeout(12000),
+        headers: {
+            Accept: "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`API klaida: HTTP ${response.status}`);
+    }
+
+    return response.json();
 }
 let serverDetails;
 export function getServerDetails(){
@@ -74,10 +101,9 @@ async function apiRequest(endpoint, params = {}) {
 }
 
 export const OasisAPI = {
-    getStats: () => apiRequest("stats"),
-    getStaff: () => apiRequest("staff"),
-    getLeaderboard: (period = "today") =>
-        apiRequest("leaderboard", { period }),
-    getActivity: () => apiRequest("activity"),
-    getRelics: () => apiRequest("relics")
+    getStats: getServerDetails,
+    getStaff: getStaffMembers,
+    getLeaderboard: getTopChatters,
+    getActivity: getServerActivity,
+    getRelics: getRelics
 };

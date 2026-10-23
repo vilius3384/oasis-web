@@ -55,3 +55,29 @@ export async function getRelics(){
   const data=await request('/relics',()=>mock.relics);
   return list(data,'relics').map(relic=>({...relic,image:relic.image_url?new URL(relic.image_url,`${config.apiBaseUrl}/`).href:relic.image}));
 }
+async function apiRequest(endpoint, params = {}) {
+    const url = new URL(API_BASE);
+
+    url.searchParams.set("endpoint", endpoint);
+
+    for (const [key, value] of Object.entries(params)) {
+        url.searchParams.set(key, value);
+    }
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+}
+
+export const OasisAPI = {
+    getStats: () => apiRequest("stats"),
+    getStaff: () => apiRequest("staff"),
+    getLeaderboard: (period = "today") =>
+        apiRequest("leaderboard", { period }),
+    getActivity: () => apiRequest("activity"),
+    getRelics: () => apiRequest("relics")
+};

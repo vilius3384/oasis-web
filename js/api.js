@@ -3,16 +3,16 @@ import * as mock from './mock-data.js';
 export const config={useMock:false,apiBaseUrl:'https://darkseagreen-armadillo-213676.hostingersite.com/oasis-api.php',discordInviteUrl:''};
 
 const RELIC_IMAGES = {
-    compass: "compass.png",
-    amulet: "amulet.png",
-    key: "key.png",
-    crystal: "crystal.png",
-    parchment: "parchment.png",
-    hourglass: "hourglass.png",
-    urn: "urn.png",
-    crown: "crown.png",
-    rose: "rose.png",
-    heart: "heart.png"
+    compass: "desert_compass.png",
+    amulet: "oasis_amulet.png",
+    key: "forgotten_key.png",
+    crystal: "oasis_crystal.png",
+    parchment: "ancient_scroll.png",
+    hourglass: "sand_clock.png",
+    urn: "pharaoh_urn.png",
+    crown: "lost_crown.png",
+    rose: "desert_rose.png",
+    heart: "oasis_heart.png"
 };
 
 async function request(path, fallback) {

@@ -1,5 +1,21 @@
+import {initializeClosingOasis} from './oasis.js';
+initializeClosingOasis();
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let textObserver;
+let tiltLibrary;
+export async function initializeCardTilt(root){
+  if(reduced||!matchMedia('(hover: hover) and (pointer: fine)').matches)return;
+  try{
+    tiltLibrary??=import('https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js');
+    await tiltLibrary;
+    window.VanillaTilt.init(root.querySelectorAll('.staff-card,.podium article'),{
+      max:8,perspective:1000,scale:1.02,speed:400,gyroscope:false
+    });
+  }catch(error){
+    tiltLibrary=undefined;
+    console.warn('Card tilt could not be loaded.',error);
+  }
+}
 export function animateText(root=document){
   if(reduced)return;
   textObserver??=new IntersectionObserver(entries=>entries.forEach(entry=>{

@@ -1,53 +1,12 @@
 import * as mock from './mock-data.js';
-
-export const config={useMock:false,apiBaseUrl:'https://darkseagreen-armadillo-213676.hostingersite.com/oasis-api.php',discordInviteUrl:''};
-
-const RELIC_IMAGES = {
-    compass: "desert_compass.png",
-    amulet: "oasis_amulet.png",
-    key: "forgotten_key.png",
-    crystal: "oasis_crystal.png",
-    scroll: "ancient_scroll.png",
-    sand: "sand_clock.png",
-    urn: "pharaoh_urn.png",
-    crown: "lost_crown.png",
-    rose: "desert_rose.png",
-    heart: "oasis_heart.png"
-};
-
-async function request(path, fallback) {
-    if (config.useMock) {
-        return structuredClone(fallback());
-    }
-
-    if (!/^https?:\/\//.test(config.apiBaseUrl)) {
-        throw new Error("Nesukonfigūruotas API adresas.");
-    }
-
-    const [endpoint, queryString = ""] = path.replace(/^\//, "").split("?");
-
-    const url = new URL(config.apiBaseUrl);
-
-    url.searchParams.set("endpoint", endpoint);
-
-    const params = new URLSearchParams(queryString);
-
-    for (const [key, value] of params) {
-        url.searchParams.set(key, value);
-    }
-
-    const response = await fetch(url, {
-        signal: AbortSignal.timeout(12000),
-        headers: {
-            Accept: "application/json"
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error(`API klaida: HTTP ${response.status}`);
-    }
-
-    return response.json();
+// Public guild API. Never put bot tokens here.
+export const config={useMock:false,apiBaseUrl:'http://95.81.82.16:10040/api/public/guilds/556379659994923009',discordInviteUrl:''};
+async function request(path,fallback){
+  if(config.useMock)return structuredClone(fallback());
+  if(!/^https?:\/\//.test(config.apiBaseUrl))throw new Error('Nesukonfigūruotas API adresas.');
+  const response=await fetch(`${config.apiBaseUrl.replace(/\/$/,'')}${path}`,{signal:AbortSignal.timeout(12000),headers:{Accept:'application/json'}});
+  if(!response.ok)throw new Error('Nepavyko pasiekti oazės įrašų.');
+  return response.json();
 }
 let serverDetails;
 export function getServerDetails(){
@@ -63,7 +22,7 @@ export async function getServerStats(){
   return [
     {label:'Oazės gyventojai',value:data.members,icon:'♧'},
     {label:'Dabar prisijungę',value:data.online,icon:'◉'},
-    {label:'Serverio pastiprinimai',value:data.boosts,icon:'ϟ'},
+    {label:'Serverio stiprinimai',value:data.boosts,icon:'ϟ'},
     {label:'Balso kanaluose',value:data.voice,icon:'♫'},
     {label:'Bendruomenės botai',value:data.bots,icon:'◇'}
   ].filter(item=>item.value!=null).map(item=>({...item,value:count(item.value)}));
@@ -92,42 +51,7 @@ export async function getServerActivity(){
     milestones:recent.slice().reverse().map(day=>({date:day.date,text:`${count(day.messages)} žinutės · ${count(day.active_members)} aktyvūs nariai`}))
   };
 }
-export async function getRelics() {
-    const data = await request("/relics", () => mock.relics);
-
-    return list(data, "relics").map(relic => {
-        const filename = RELIC_IMAGES[relic.id];
-
-        return {
-            ...relic,
-            image: filename
-                ? new URL(`../assets/relics/${filename}`, import.meta.url).href
-                : null
-        };
-    });
+export async function getRelics(){
+  const data=await request('/relics',()=>mock.relics);
+  return list(data,'relics').map(relic=>({...relic,image:relic.image_url?new URL(relic.image_url,`${config.apiBaseUrl}/`).href:relic.image}));
 }
-async function apiRequest(endpoint, params = {}) {
-    const url = new URL(config.apiBaseUrl);
-
-    url.searchParams.set("endpoint", endpoint);
-
-    for (const [key, value] of Object.entries(params)) {
-        url.searchParams.set(key, value);
-    }
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-    }
-
-    return response.json();
-}
-
-export const OasisAPI = {
-    getStats: getServerDetails,
-    getStaff: getStaffMembers,
-    getLeaderboard: getTopChatters,
-    getActivity: getServerActivity,
-    getRelics: getRelics
-};

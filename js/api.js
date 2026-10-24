@@ -76,13 +76,10 @@ export async function getDiscordInvite() {
         return config.discordInviteUrl;
     }
 
-    const data = await request(
-        `/guilds/${OASIS_GUILD_ID}/invite`,
-        () => null
-    );
+    const data = await request("/invite", () => null);
 
     if (!data?.invite_url) {
-        throw new Error("API did not return an invite URL");
+        throw new Error("Invite URL missing");
     }
 
     const url = new URL(data.invite_url);
@@ -91,7 +88,7 @@ export async function getDiscordInvite() {
         url.protocol !== "https:" ||
         !["discord.gg", "discord.com"].includes(url.hostname)
     ) {
-        throw new Error("Invalid Discord invite URL");
+        throw new Error("Invalid Discord invitation URL");
     }
 
     return url.href;

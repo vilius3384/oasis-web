@@ -65,6 +65,38 @@ async function request(path, fallback) {
     return response.json();
 }
 
+const OASIS_GUILD_ID = "556379659994923009";
+
+export async function getDiscordInvite() {
+    if (config.useMock) {
+        if (!config.discordInviteUrl) {
+            throw new Error("Mock invite URL not configured");
+        }
+
+        return config.discordInviteUrl;
+    }
+
+    const data = await request(
+        `/guilds/${OASIS_GUILD_ID}/invite`,
+        () => null
+    );
+
+    if (!data?.invite_url) {
+        throw new Error("API did not return an invite URL");
+    }
+
+    const url = new URL(data.invite_url);
+
+    if (
+        url.protocol !== "https:" ||
+        !["discord.gg", "discord.com"].includes(url.hostname)
+    ) {
+        throw new Error("Invalid Discord invite URL");
+    }
+
+    return url.href;
+}
+
 let serverDetails;
 export function getServerDetails(){
   if(!serverDetails)serverDetails=request('/stats',()=>null).catch(error=>{serverDetails=null;throw error;});

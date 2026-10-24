@@ -1,4 +1,13 @@
-import {config,getServerDetails,getServerStats,getStaffMembers,getTopChatters,getServerActivity,getRelics} from './api.js';
+import {
+    config,
+    getDiscordInvite,
+    getServerDetails,
+    getServerStats,
+    getStaffMembers,
+    getTopChatters,
+    getServerActivity,
+    getRelics
+} from './api.js';
 import {renderPersonDetail,renderServerDetails,renderStats,renderStaff,renderLeaderboard,renderRelics,renderActivity,escapeHTML,safeImage} from './components.js';
 import {initializeAnimations,observeCounters,animateText,initializeCardTilt} from './animations.js';
 const dialog=document.querySelector('#detail');

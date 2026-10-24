@@ -69,7 +69,15 @@ document.querySelectorAll('[data-period]').forEach(b=>b.addEventListener('click'
 initializeAnimations();
 const sectionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){nav.querySelectorAll('a').forEach(a=>{const active=a.hash===`#${entry.target.id}`;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');});}}),{rootMargin:'-15% 0px -60% 0px'});document.querySelectorAll('main section[id]').forEach(s=>sectionObserver.observe(s));
 await Promise.allSettled([
-getServerDetails().then(data=>{renderServerDetails(data);animateText();if(data?.invite_url)config.discordInviteUrl=data.invite_url;}).catch(()=>{}),
+    
+getServerDetails()
+    .then(data => {
+        renderServerDetails(data);
+        animateText();
+    })
+    .catch(error => {
+        console.error('Failed to load server details:', error);
+    }),    
 populate('stats',getServerStats,renderStats,(_,root)=>observeCounters(root)),
 populate('staff',getStaffMembers,renderStaff,(data,root)=>{bindProfiles(data,root);initializeCardTilt(root);}),loadLeaderboard('today'),
 populate('relics',getRelics,renderRelics,(data,root)=>root.querySelectorAll('[data-relic]').forEach(button=>button.addEventListener('click',()=>{const relic=data[Number(button.dataset.relic)];openDetail(`<img src="${safeImage(relic.image)}" alt="${escapeHTML(relic.name)}"><p class="eyebrow">${escapeHTML(relic.rarity)} RELIKVIJA</p><h2>${escapeHTML(relic.name)}</h2><p>${escapeHTML(relic.description)}</p><p class="dialog-note">${config.useMock?'Demonstracinė relikvijų kolekcija':'Oazės relikvijų kolekcija'}</p>`);}))),

@@ -117,16 +117,16 @@ export async function getRelics() {
     const imageBase = new URL('../assets/relics/', import.meta.url);
 
     const imageFiles = {
-        compass: 'compass.png',
-        amulet: 'amulet.png',
-        key: 'key.png',
-        crystal: 'crystal.png',
-        scroll: 'scroll.png',
-        sand: 'sand.png',
-        urn: 'urn.png',
-        crown: 'crown.png',
-        rose: 'rose.png',
-        heart: 'heart.png'
+        compass: 'desert_compass.png',
+        amulet: 'oasis_amulet.png',
+        key: 'forgotten_key.png',
+        crystal: 'oasis_crystal.png',
+        scroll: 'ancient_scroll.png',
+        sand: 'sand_clock.png',
+        urn: 'pharaon_urn.png',
+        crown: 'lost_crown.png',
+        rose: 'desert_rose.png',
+        heart: 'oasis_heart.png'
     };
 
     return list(data, 'relics').map(relic => {

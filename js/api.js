@@ -111,7 +111,35 @@ export async function getServerActivity(){
     milestones:recent.slice().reverse().map(day=>({date:day.date,text:`${count(day.messages)} žinutės · ${count(day.active_members)} aktyvūs nariai`}))
   };
 }
-export async function getRelics(){
-  const data=await request('/relics',()=>mock.relics);
-  return list(data,'relics').map(relic=>({...relic,image:relic.image_url?new URL(relic.image_url,`${config.apiBaseUrl}/`).href:relic.image}));
+export async function getRelics() {
+    const data = await request('/relics', () => mock.relics);
+
+    const imageBase = new URL('../assets/relics/', import.meta.url);
+
+    const imageFiles = {
+        compass: 'compass.png',
+        amulet: 'amulet.png',
+        key: 'key.png',
+        crystal: 'crystal.png',
+        scroll: 'scroll.png',
+        sand: 'sand.png',
+        urn: 'urn.png',
+        crown: 'crown.png',
+        rose: 'rose.png',
+        heart: 'heart.png'
+    };
+
+    return list(data, 'relics').map(relic => {
+        const imagePath = relic.image_url || relic.image || '';
+        const relicId = imagePath.split('/').pop()?.split('?')[0];
+
+        const filename = imageFiles[relicId];
+
+        return {
+            ...relic,
+            image: filename
+                ? new URL(filename, imageBase).href
+                : ''
+        };
+    });
 }

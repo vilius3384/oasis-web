@@ -7,7 +7,7 @@ import {
     getTopChatters,
     getServerActivity,
     getRelics
-} from './api.js';
+} from './api.js?v=3';
 import {renderPersonDetail,renderServerDetails,renderStats,renderStaff,renderLeaderboard,renderRelics,renderActivity,escapeHTML,safeImage} from './components.js';
 import {initializeAnimations,observeCounters,animateText,initializeCardTilt} from './animations.js';
 const dialog=document.querySelector('#detail');

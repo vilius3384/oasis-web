@@ -123,7 +123,7 @@ export async function getRelics() {
         crystal: 'oasis_crystal.png',
         scroll: 'ancient_scroll.png',
         sand: 'sand_clock.png',
-        urn: 'pharaon_urn.png',
+        urn: 'pharaoh_urn.png',
         crown: 'lost_crown.png',
         rose: 'desert_rose.png',
         heart: 'oasis_heart.png'

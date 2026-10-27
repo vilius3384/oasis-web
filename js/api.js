@@ -27,12 +27,40 @@ export async function getDiscordInvite() {
 
     return parsed.href;
 }
-async function request(path,fallback){
-  if(config.useMock)return structuredClone(fallback());
-  if(!/^https?:\/\//.test(config.apiBaseUrl))throw new Error('Nesukonfigūruotas API adresas.');
-  const response=await fetch(`${config.apiBaseUrl.replace(/\/$/,'')}${path}`,{signal:AbortSignal.timeout(12000),headers:{Accept:'application/json'}});
-  if(!response.ok)throw new Error('Nepavyko pasiekti oazės įrašų.');
-  return response.json();
+async function request(path, fallback) {
+    if (config.useMock) {
+        return structuredClone(fallback());
+    }
+
+    const url = new URL(config.apiBaseUrl);
+
+    const parsed = new URL(
+        path.replace(/^\//, ''),
+        'https://example.invalid/'
+    );
+
+    const endpoint = parsed.pathname.replace(/^\//, '');
+
+    url.searchParams.set('endpoint', endpoint);
+
+    for (const [key, value] of parsed.searchParams) {
+        url.searchParams.set(key, value);
+    }
+
+    const response = await fetch(url.toString(), {
+        signal: AbortSignal.timeout(12000),
+        headers: {
+            Accept: 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            `API request failed: ${response.status}`
+        );
+    }
+
+    return response.json();
 }
 let serverDetails;
 export function getServerDetails(){

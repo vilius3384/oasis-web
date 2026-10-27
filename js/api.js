@@ -1,99 +1,13 @@
 import * as mock from './mock-data.js';
 // Public guild API. Never put bot tokens here.
-export const config={useMock:false,apiBaseUrl:'https://darkseagreen-armadillo-213676.hostingersite.com/oasis-api.php',discordInviteUrl:''};
-
-const RELIC_IMAGES = {
-    compass: "desert_compass.png",
-    amulet: "oasis_amulet.png",
-    key: "forgotten_key.png",
-    crystal: "oasis_crystal.png",
-    scroll: "ancient_scroll.png",
-    sand: "sand_clock.png",
-    urn: "pharaoh_urn.png",
-    crown: "lost_crown.png",
-    rose: "desert_rose.png",
-    heart: "oasis_heart.png"
-};
-
-export async function getRelics() {
-    const data = await request("/relics", () => mock.relics);
-
-    return list(data, "relics").map(relic => {
-        const filename = RELIC_IMAGES[relic.id];
-
-        return {
-            ...relic,
-            image: filename
-                ? new URL(
-                    `../assets/relics/${filename}`,
-                    import.meta.url
-                ).href
-                : null
-        };
-    });
+export const config={useMock:false,apiBaseUrl:'http://95.81.82.16:10040/api/public/guilds/556379659994923009',discordInviteUrl:''};
+async function request(path,fallback){
+  if(config.useMock)return structuredClone(fallback());
+  if(!/^https?:\/\//.test(config.apiBaseUrl))throw new Error('Nesukonfigūruotas API adresas.');
+  const response=await fetch(`${config.apiBaseUrl.replace(/\/$/,'')}${path}`,{signal:AbortSignal.timeout(12000),headers:{Accept:'application/json'}});
+  if(!response.ok)throw new Error('Nepavyko pasiekti oazės įrašų.');
+  return response.json();
 }
-
-async function request(path, fallback) {
-    if (config.useMock) {
-        return structuredClone(fallback());
-    }
-
-    const [endpoint, queryString = ""] =
-        path.replace(/^\//, "").split("?");
-
-    const url = new URL(config.apiBaseUrl);
-
-    url.searchParams.set("endpoint", endpoint);
-
-    const params = new URLSearchParams(queryString);
-
-    for (const [key, value] of params) {
-        url.searchParams.set(key, value);
-    }
-
-    const response = await fetch(url, {
-        signal: AbortSignal.timeout(12000),
-        headers: {
-            Accept: "application/json"
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error(`API error: HTTP ${response.status}`);
-    }
-
-    return response.json();
-}
-
-const OASIS_GUILD_ID = "556379659994923009";
-
-export async function getDiscordInvite() {
-    if (config.useMock) {
-        if (!config.discordInviteUrl) {
-            throw new Error("Mock invite URL not configured");
-        }
-
-        return config.discordInviteUrl;
-    }
-
-    const data = await request("/invite", () => null);
-
-    if (!data?.invite_url) {
-        throw new Error("Invite URL missing");
-    }
-
-    const url = new URL(data.invite_url);
-
-    if (
-        url.protocol !== "https:" ||
-        !["discord.gg", "discord.com"].includes(url.hostname)
-    ) {
-        throw new Error("Invalid Discord invitation URL");
-    }
-
-    return url.href;
-}
-
 let serverDetails;
 export function getServerDetails(){
   if(!serverDetails)serverDetails=request('/stats',()=>null).catch(error=>{serverDetails=null;throw error;});
@@ -121,6 +35,12 @@ export async function getTopChatters(period='today'){
   const data=await request(`/leaderboard?period=${encodeURIComponent(period)}`,()=>mock.topChatters(period));
   return list(data,'leaderboard').map(person);
 }
+// Inspect the complete weekly payload, including each day's leaderboard.
+if(!config.useMock){
+  request('/leaderboard?period=week',()=>null)
+    .then(data=>console.log('Weekly leaderboard API response:',data))
+    .catch(error=>console.error('Failed to fetch weekly leaderboard:',error));
+}
 export async function getServerActivity(){
   const data=await request('/activity',()=>mock.activity);
   if(config.useMock)return data;
@@ -137,4 +57,7 @@ export async function getServerActivity(){
     milestones:recent.slice().reverse().map(day=>({date:day.date,text:`${count(day.messages)} žinutės · ${count(day.active_members)} aktyvūs nariai`}))
   };
 }
-
+export async function getRelics(){
+  const data=await request('/relics',()=>mock.relics);
+  return list(data,'relics').map(relic=>({...relic,image:relic.image_url?new URL(relic.image_url,`${config.apiBaseUrl}/`).href:relic.image}));
+}

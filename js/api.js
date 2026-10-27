@@ -1,6 +1,6 @@
 import * as mock from './mock-data.js';
 // Public guild API. Never put bot tokens here.
-export const config={useMock:false,apiBaseUrl:'http://95.81.82.16:10040/api/public/guilds/556379659994923009',discordInviteUrl:''};
+export const config={useMock:false,apiBaseUrl:'https://darkseagreen-armadillo-213676.hostingersite.com/oasis-api.php',discordInviteUrl:''};
 export async function getDiscordInvite() {
     if (config.discordInviteUrl) {
         return config.discordInviteUrl;

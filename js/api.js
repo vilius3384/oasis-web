@@ -1,6 +1,32 @@
 import * as mock from './mock-data.js';
 // Public guild API. Never put bot tokens here.
 export const config={useMock:false,apiBaseUrl:'http://95.81.82.16:10040/api/public/guilds/556379659994923009',discordInviteUrl:''};
+export async function getDiscordInvite() {
+    if (config.discordInviteUrl) {
+        return config.discordInviteUrl;
+    }
+
+    const data = await request('/invite', () => ({
+        url: ''
+    }));
+
+    const invite = data?.url || data?.invite_url || data?.invite;
+
+    if (typeof invite !== 'string') {
+        throw new Error('Discord invite URL not found.');
+    }
+
+    const parsed = new URL(invite);
+
+    if (
+        parsed.protocol !== 'https:' ||
+        !['discord.gg', 'discord.com'].includes(parsed.hostname)
+    ) {
+        throw new Error('Invalid Discord invite URL.');
+    }
+
+    return parsed.href;
+}
 async function request(path,fallback){
   if(config.useMock)return structuredClone(fallback());
   if(!/^https?:\/\//.test(config.apiBaseUrl))throw new Error('Nesukonfigūruotas API adresas.');
